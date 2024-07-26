@@ -40,6 +40,13 @@
 # define FeatureType PPCFeatures
 # define FeatureEnumType PPCFeaturesEnum
 # define LastFeature PPC_LAST_
+#elif defined(CPU_FEATURES_ARCH_RISCV)
+# include "cpuinfo_riscv.h"
+# define GetFeatureName GetRiscvFeaturesEnumName
+# define GetFeatureValue GetRiscvFeaturesEnumValue
+# define FeatureType RiscvFeatures
+# define FeatureEnumType RiscvFeaturesEnum
+# define LastFeature RISCV_LAST_
 #endif
 
 #define SET_FLAG(key)                                                          \
@@ -135,6 +142,12 @@ NAN_METHOD(GetCPUInfo) {
   SET_STR("cpu", strings.cpu);
   SET_STR("instruction set", strings.type.platform);
   SET_STR("microarchitecture", strings.type.base_platform);
+  SET_VAL("flags", GenerateFlags(&details.features));
+#elif defined(CPU_FEATURES_ARCH_RISCV)
+  const RiscvInfo details = GetRiscvInfo();
+  SET_STR("arch", "riscv");
+  SET_STR("uarch", details.uarch);
+  SET_STR("vendor", details.vendor);
   SET_VAL("flags", GenerateFlags(&details.features));
 #else
   SET_STR("arch", "unknown");
